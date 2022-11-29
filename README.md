@@ -1,6 +1,9 @@
 # Validation
 bean을 사용하지않은 Validation과 bean을 사용한 Validation
 
+
+bean을 사용하지않은 Validation<br/>
+
 참고: 클라이언트 검증, 서버 검증<br/>
 클라이언트 검증은 조작할 수 있으므로 보안에 취약하다.<br/>
 서버만으로 검증하면, 즉각적인 고객 사용성이 부족해진다.<br/>
@@ -124,6 +127,28 @@ required: 필수 값 입니다.<br/>
 ![image](https://user-images.githubusercontent.com/69129562/204526697-fce93838-8e9a-4dbd-a4cc-d1abdd127dca.png)
 
 
+ bean을 사용한 Validation<br/>
+ 검증 애노테이션
+@NotBlank : 빈값 + 공백만 있는 경우를 허용하지 않는다.
+@NotNull : null 을 허용하지 않는다.
+@Range(min = 1000, max = 1000000) : 범위 안의 값이어야 한다.
+@Max(9999) : 최대 9999까지만 허용한다.
+
+검증 순서
+1. @ModelAttribute 각각의 필드에 타입 변환 시도
+1. 성공하면 다음으로
+2. 실패하면 typeMismatch 로 FieldError 추가
+2. Validator 적용
+바인딩에 성공한 필드만 Bean Validation 적용
+BeanValidator는 바인딩에 실패한 필드는 BeanValidation을 적용하지 않는다.
+생각해보면 타입 변환에 성공해서 바인딩에 성공한 필드여야 BeanValidation 적용이 의미 있다.
+(일단 모델 객체에 바인딩 받는 값이 정상으로 들어와야 검증도 의미가 있다.)
+@ModelAttribute 각각의 필드 타입 변환시도 변환에 성공한 필드만 BeanValidation 적용
+예)
+itemName 에 문자 "A" 입력 타입 변환 성공 itemName 필드에 BeanValidation 적용
+price 에 문자 "A" 입력 "A"를 숫자 타입 변환 시도 실패 typeMismatch FieldError 추가
+price 필드는 BeanValidation 적용 X
+ 
 
 
 
