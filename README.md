@@ -71,6 +71,60 @@ th:field="*{price}"<br/>
 그리고 해당 오류를 BindingResult 에 담아서 컨트롤러를 호출한다.<br/> 따라서 타입 오류 같은 바인딩
 실패시에도 사용자의 오류 메시지를 정상 출력할 수 있다.<br/>
 
-20페이지
+public FieldError(String objectName, String field, @Nullable Object
+rejectedValue, boolean bindingFailure, @Nullable String[] codes, @Nullable
+Object[] arguments, @Nullable String defaultMessage)<br/>
+파라미터 목록<br/>
+objectName : 오류가 발생한 객체 이름<br/>
+field : 오류 필드<br/>
+rejectedValue : 사용자가 입력한 값(거절된 값)<br/>
+bindingFailure : 타입 오류 같은 바인딩 실패인지, 검증 실패인지 구분 값<br/>
+codes : 메시지 코드<br/>
+arguments : 메시지에서 사용하는 인자<br/>
+defaultMessage : 기본 오류 메시지<br/>
+FieldError , ObjectError 의 생성자는 codes , arguments 를 제공한다. 이것은 오류 발생시 오류
+코드로 메시지를 찾기 위해 사용된다<br/>
+ex)<br/>
+![image](https://user-images.githubusercontent.com/69129562/204523818-c7332069-0b58-4772-b3f2-62b34ee6c141.png)
+<br/>
+BindingResult 가 제공하는 rejectValue() , reject() 를 사용하면 FieldError , ObjectError 를
+직접 생성하지 않고, 깔끔하게 검증 오류를 다룰 수 있다.<br/>
+rejectValue() , reject() 를 사용해서 기존 코드를 단순화해보자.<br/>
+![image](https://user-images.githubusercontent.com/69129562/204524845-0aa2a7ec-cedb-485d-876f-f0d84434de95.png)
+실행<br/>
+오류 메시지가 정상 출력된다. 그런데 errors.properties 에 있는 코드를 직접 입력하지 않았는데
+어떻게 된 것일까?<br/>
+<br/>
+![image](https://user-images.githubusercontent.com/69129562/204525199-5d390adb-b2e6-4c82-960f-e90cff2a41d0.png)\
+오류 코드를 만들 때 다음과 같이 자세히 만들 수도 있고,
+required.item.itemName : 상품 이름은 필수 입니다.<br/>
+range.item.price : 상품의 가격 범위 오류 입니다.<br/>
+또는 다음과 같이 단순하게 만들 수도 있다.<br/>
+required : 필수 값 입니다.<br/>
+range : 범위 오류 입니다.<br/>
+단순하게 만들면 범용성이 좋아서 여러곳에서 사용할 수 있지만, 메시지를 세밀하게 작성하기 어렵다.<br/>
+반대로 너무 자세하게 만들면 범용성이 떨어진다.<br/> 가장 좋은 방법은 범용성으로 사용하다가, 세밀하게
+작성해야 하는 경우에는 세밀한 내용이 적용되도록 메시지에 단계를 두는 방법이다.<br/>
+예를 들어서 required 라고 오류 코드를 사용한다고 가정해보자.<br/>
+다음과 같이 required 라는 메시지만 있으면 이 메시지를 선택해서 사용하는 것이다<br/>
+required: 필수 값 입니다<br/>
+그런데 오류 메시지에 required.item.itemName 와 같이 객체명과 필드명을 조합한 세밀한 메시지
+코드가 있으면 이 메시지를 높은 우선순위로 사용하는 것이다.<br/>
+#Level1<br/>
+required.item.itemName: 상품 이름은 필수 입니다.<br/>
+#Level2<br/>
+required: 필수 값 입니다.<br/>
+물론 이렇게 객체명과 필드명을 조합한 메시지가 있는지 우선 확인하고, 없으면 좀 더 범용적인 메시지를
+선택하도록 추가 개발을 해야겠지만, 범용성 있게 잘 개발해두면, 메시지의 추가 만으로 매우 편리하게 오류
+메시지를 관리할 수 있을 것이다.<br/>
+스프링은 MessageCodesResolver 라는 것으로 이러한 기능을 지원한다.<br/>
+
+![image](https://user-images.githubusercontent.com/69129562/204526310-16a9ce36-4a24-449c-b930-f64d1afd328b.png)
+
+![image](https://user-images.githubusercontent.com/69129562/204526697-fce93838-8e9a-4dbd-a4cc-d1abdd127dca.png)
+
+
+
+
 
 
